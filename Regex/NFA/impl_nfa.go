@@ -132,6 +132,13 @@ func (g *NFA_Graph) StoreGraph() {
 	p := g.Head
 	for p != nil {
 		g.Nodes[p.Id] = p
-
+		q := p.Edges
+		for q != nil && q.Char != EPSILON_EDGE {
+			if g.Edges[q.Char] == nil {
+				g.Edges[q.Char] = make([]*NFA_Edge, 0)
+			}
+			g.Edges[q.Char] = append(g.Edges[q.Char], q)
+			q = q.Next
+		}
 	}
 }
