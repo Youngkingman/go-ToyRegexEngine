@@ -142,3 +142,11 @@ func (g *NFA_Graph) StoreGraph() {
 		}
 	}
 }
+
+func (g *NFA_Graph) ResetNodesVisited() {
+	p := g.Head
+	for p != nil {
+		p.IsVisited = false
+		p = p.Next
+	}
+}

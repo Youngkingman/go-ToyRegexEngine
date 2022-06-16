@@ -9,7 +9,7 @@ type NFA interface {
 	StoreGraph()
 }
 
-const EPSILON_EDGE = byte('?')
+const EPSILON_EDGE = byte('-')
 
 type NFA_Node struct {
 	Id        int
@@ -22,9 +22,10 @@ type NFA_Edge struct {
 	Char byte
 	From *NFA_Node
 	To   *NFA_Node
-	Next *NFA_Edge
+	Next *NFA_Edge // the property point to last edge with same `from`
 }
 
+// The graph is store in the struct of `链式前向星`
 type NFA_Graph struct {
 	AstTree   *lexer.AST
 	Head      *NFA_Node
