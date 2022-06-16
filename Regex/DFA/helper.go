@@ -8,5 +8,3 @@ func compareSet(a map[int]bool, b map[int]bool) bool {
 	}
 	return true
 }
-
-func (g *DFA_Graph) constructAlphabeta() {}
