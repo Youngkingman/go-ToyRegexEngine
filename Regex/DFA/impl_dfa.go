@@ -49,7 +49,7 @@ func (g *DFA_Graph) Delta(s map[int]bool, ch byte) (ret map[int]bool) {
 
 func (g *DFA_Graph) Epsilon_Closure(x map[int]bool) (epsilonClosure map[int]bool) {
 	Q := make([]int, 0)
-	for k, _ := range x {
+	for k := range x {
 		Q = append(Q, k)
 		for len(Q) > 0 {
 			q := Q[0]
@@ -88,14 +88,14 @@ func (g *DFA_Graph) SubsetContruct() {
 	for len(workQueue) > 0 {
 		q := workQueue[0]
 		workQueue = workQueue[1:]
-		for c, _ := range g.Alphabeta {
+		for c := range g.Alphabeta {
 			v := g.Delta(q, c)
 			if v == nil {
 				continue
 			}
 			t := g.Epsilon_Closure(v)
 			g.AddEdge(q, t, c)
-			if g.NeedNewNode == true {
+			if g.NeedNewNode {
 				workQueue = append(workQueue, t)
 				g.NeedNewNode = false
 			}
