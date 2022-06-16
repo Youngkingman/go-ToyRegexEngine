@@ -3,18 +3,19 @@ package dfa
 import nfa "goexpr/Regex/NFA"
 
 type DFA interface {
-	FindOrInsertNode(map[int]bool)
+	FindOrInsertNode(map[int]bool) *DFA_Node
 	AddEdge(from, to map[int]bool, ch byte)
-	Delta(s map[int]bool, ch byte)
-	Epsilon_Closure(x map[int]bool)
+	Delta(s map[int]bool, ch byte) map[int]bool
+	Epsilon_Closure(x map[int]bool) map[int]bool
+	ConstructAlphabeta()
 	SubsetContruct()
 	StoreGraph()
 }
 
 type DFA_Node struct {
-	Num      int
+	Id       int
 	IsAccept bool
-	Susbsets map[int]bool
+	StatesIn map[int]bool
 	Edges    *DFA_Edge
 	Next     *DFA_Node
 }
@@ -26,16 +27,32 @@ type DFA_Edge struct {
 	Next *DFA_Edge
 }
 
+// Still our graph store in the struct of `链式前向星`
 type DFA_Graph struct {
-	innerNFA    nfa.NFA
-	NodeCount   int
-	Alphabeta   map[byte]bool
-	Head        *DFA_Node
-	Nodes       []*DFA_Node
+	innerNFA    nfa.NFA_Graph
+	NodeCount   int           //number of vertex
+	Alphabeta   map[byte]bool //store all charcters
+	Head        *DFA_Node     //current start head
+	Nodes       []*DFA_Node   //the same as NFA
 	Edges       map[byte][]*DFA_Edge
 	NeedNewNode bool
 }
 
-func NewDFA_Node() *DFA_Node
+func NewDFA_Node(id int, isAcpt bool, sets map[int]bool, edges *DFA_Edge, next *DFA_Node) *DFA_Node {
+	return &DFA_Node{
+		Id:       id,
+		IsAccept: isAcpt,
+		StatesIn: sets,
+		Edges:    edges,
+		Next:     next,
+	}
+}
 
-func NewDFA_Edge() *DFA_Edge
+func NewDFA_Edge(ch byte, from *DFA_Node, to *DFA_Node, next *DFA_Edge) *DFA_Edge {
+	return &DFA_Edge{
+		Char: ch,
+		From: from,
+		To:   to,
+		Next: next,
+	}
+}
