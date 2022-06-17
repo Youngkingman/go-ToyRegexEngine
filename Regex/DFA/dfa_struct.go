@@ -30,13 +30,21 @@ type DFA_Edge struct {
 
 // Still our graph store in the struct of `链式前向星`
 type DFA_Graph struct {
-	innerNFA    nfa.NFA_Graph
+	innerNFA    *nfa.NFA_Graph
 	NodeCount   int           //number of vertex
 	Alphabeta   map[byte]bool //store all charcters
 	Head        *DFA_Node     //current start head
 	Nodes       []*DFA_Node   //the same as NFA
 	Edges       map[byte][]*DFA_Edge
 	NeedNewNode bool
+}
+
+func NewDFA_Graph(str string) (ret *DFA_Graph) {
+	ret.innerNFA = nfa.NewNFA_Graph(str)
+	ret.Head = nil
+	ret.NodeCount = 0
+	ret.ToDFA()
+	return
 }
 
 func NewDFA_Node(id int, isAcpt bool, sets map[int]bool, edges *DFA_Edge, next *DFA_Node) *DFA_Node {
