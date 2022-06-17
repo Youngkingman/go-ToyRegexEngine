@@ -4,19 +4,19 @@ import lexer "goexpr/Regex/Lexer"
 
 var _ NFA = (*NFA_Graph)(nil)
 
-func (g *NFA_Graph) toNFA() {
-	g.ThompsonAlgor(g.AstTree)
-	g.StoreGraph()
+func (g *NFA_Graph) ToNFA() {
+	g.thompsonAlgor(g.AstTree)
+	g.storeGraph()
 }
 
 /*
 	ThompsonAlgor(tree *lexer.AST)
-	AddEdge(from, to int, edgeChar byte)
+	addEdge(from, to int, edgeChar byte)
 	FindOrInsertNode(num int) *NFA_Node
 	StoreGraph()
 */
 
-func (g *NFA_Graph) ThompsonAlgor(tree *lexer.AST) {
+func (g *NFA_Graph) thompsonAlgor(tree *lexer.AST) {
 	g.recurciveConstruct(tree.Root)
 }
 
@@ -28,7 +28,7 @@ func (g *NFA_Graph) recurciveConstruct(t *lexer.Token) {
 		from := g.NodeCount
 		to := g.NodeCount + 1
 		g.NodeCount += 2
-		g.AddEdge(from, to, t.Char)
+		g.addEdge(from, to, t.Char)
 		g.StartId = from
 		g.AcceptId = to
 	} else if t.Token_Type == lexer.TOKEN_ALTER {
@@ -48,11 +48,11 @@ func (g *NFA_Graph) recurciveConstruct(t *lexer.Token) {
 		from, to := g.NodeCount, g.NodeCount+1
 		g.NodeCount += 2
 
-		g.AddEdge(from, start0, EPSILON_EDGE)
-		g.AddEdge(from, start1, EPSILON_EDGE)
+		g.addEdge(from, start0, EPSILON_EDGE)
+		g.addEdge(from, start1, EPSILON_EDGE)
 
-		g.AddEdge(acecept0, to, EPSILON_EDGE)
-		g.AddEdge(acecept1, to, EPSILON_EDGE)
+		g.addEdge(acecept0, to, EPSILON_EDGE)
+		g.addEdge(acecept1, to, EPSILON_EDGE)
 		g.StartId, g.AcceptId = from, to
 
 	} else if t.Token_Type == lexer.TOKEN_CONCAT {
@@ -62,7 +62,7 @@ func (g *NFA_Graph) recurciveConstruct(t *lexer.Token) {
 		g.recurciveConstruct(t.LeftChild)
 		preStart, preAccept := g.StartId, g.AcceptId
 		g.recurciveConstruct(t.RightChild)
-		g.AddEdge(preAccept, preStart, EPSILON_EDGE)
+		g.addEdge(preAccept, preStart, EPSILON_EDGE)
 		g.StartId = preStart
 	} else if t.Token_Type == lexer.TOKEN_KLEEN {
 		/*
@@ -72,13 +72,13 @@ func (g *NFA_Graph) recurciveConstruct(t *lexer.Token) {
 			  					\--<-------ε-----------/
 		*/
 		g.recurciveConstruct(t.LeftChild)
-		g.AddEdge(g.AcceptId, g.StartId, EPSILON_EDGE)
+		g.addEdge(g.AcceptId, g.StartId, EPSILON_EDGE)
 
 		from, to := g.NodeCount, g.NodeCount+1
 		g.NodeCount += 2
-		g.AddEdge(from, g.StartId, EPSILON_EDGE)
-		g.AddEdge(from, to, EPSILON_EDGE)
-		g.AddEdge(g.AcceptId, to, EPSILON_EDGE)
+		g.addEdge(from, g.StartId, EPSILON_EDGE)
+		g.addEdge(from, to, EPSILON_EDGE)
+		g.addEdge(g.AcceptId, to, EPSILON_EDGE)
 
 		g.StartId, g.AcceptId = from, to
 	} else if t.Token_Type == lexer.TOKEN_OPTION {
@@ -91,9 +91,9 @@ func (g *NFA_Graph) recurciveConstruct(t *lexer.Token) {
 		from, to := g.NodeCount, g.NodeCount+1
 		g.NodeCount += 2
 
-		g.AddEdge(from, g.StartId, EPSILON_EDGE)
-		g.AddEdge(from, to, EPSILON_EDGE)
-		g.AddEdge(g.AcceptId, to, EPSILON_EDGE)
+		g.addEdge(from, g.StartId, EPSILON_EDGE)
+		g.addEdge(from, to, EPSILON_EDGE)
+		g.addEdge(g.AcceptId, to, EPSILON_EDGE)
 
 		g.StartId, g.AcceptId = from, to
 	} else if t.Token_Type == lexer.TOKEN_P_KLEEN {
@@ -102,18 +102,18 @@ func (g *NFA_Graph) recurciveConstruct(t *lexer.Token) {
 			  			  \--<-------ε----------------/
 		*/
 		g.recurciveConstruct(t.LeftChild)
-		g.AddEdge(g.AcceptId, g.StartId, EPSILON_EDGE)
+		g.addEdge(g.AcceptId, g.StartId, EPSILON_EDGE)
 	}
 }
 
-func (g *NFA_Graph) AddEdge(from, to int, edgeChar byte) {
-	fNode := g.FindOrInsertNode(from)
-	tNode := g.FindOrInsertNode(to)
+func (g *NFA_Graph) addEdge(from, to int, edgeChar byte) {
+	fNode := g.findOrInsertNode(from)
+	tNode := g.findOrInsertNode(to)
 	edge := NewNFA_Edge(edgeChar, fNode, tNode, fNode.Edges)
 	fNode.Edges = edge
 }
 
-func (g *NFA_Graph) FindOrInsertNode(num int) *NFA_Node {
+func (g *NFA_Graph) findOrInsertNode(num int) *NFA_Node {
 	node := g.Head
 	for node != nil {
 		if node.Id == num {
@@ -127,7 +127,7 @@ func (g *NFA_Graph) FindOrInsertNode(num int) *NFA_Node {
 	return pNode
 }
 
-func (g *NFA_Graph) StoreGraph() {
+func (g *NFA_Graph) storeGraph() {
 	g.Nodes = make([]*NFA_Node, g.NodeCount)
 	p := g.Head
 	for p != nil {

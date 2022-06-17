@@ -3,13 +3,14 @@ package dfa
 import nfa "goexpr/Regex/NFA"
 
 type DFA interface {
-	FindOrInsertNode(map[int]bool) *DFA_Node
-	AddEdge(from, to map[int]bool, ch byte)
-	Delta(s map[int]bool, ch byte) map[int]bool
-	Epsilon_Closure(x map[int]bool) map[int]bool
-	ConstructAlphabeta()
-	SubsetContruct()
-	StoreGraph()
+	findOrInsertNode(map[int]bool) *DFA_Node
+	addEdge(from, to map[int]bool, ch byte)
+	delta(s map[int]bool, ch byte) map[int]bool
+	epsilonClosure(x map[int]bool) map[int]bool
+	constructAlphabeta()
+	subsetContruct()
+	storeGraph()
+	ToDFA()
 }
 
 type DFA_Node struct {

@@ -4,13 +4,13 @@ import nfa "goexpr/Regex/NFA"
 
 var _ DFA = (*DFA_Graph)(nil)
 
-func (g *DFA_Graph) toDFA() {
-	g.ConstructAlphabeta()
-	g.SubsetContruct()
-	g.StoreGraph()
+func (g *DFA_Graph) ToDFA() {
+	g.constructAlphabeta()
+	g.subsetContruct()
+	g.storeGraph()
 }
 
-func (g *DFA_Graph) FindOrInsertNode(set map[int]bool) *DFA_Node {
+func (g *DFA_Graph) findOrInsertNode(set map[int]bool) *DFA_Node {
 	node := g.Head
 	for node != nil {
 		if compareSet(set, node.StatesIn) {
@@ -29,15 +29,15 @@ func (g *DFA_Graph) FindOrInsertNode(set map[int]bool) *DFA_Node {
 	return p
 }
 
-func (g *DFA_Graph) AddEdge(from, to map[int]bool, ch byte) {
-	f := g.FindOrInsertNode(from)
-	t := g.FindOrInsertNode(to)
+func (g *DFA_Graph) addEdge(from, to map[int]bool, ch byte) {
+	f := g.findOrInsertNode(from)
+	t := g.findOrInsertNode(to)
 	edge := NewDFA_Edge(ch, f, t, f.Edges)
 	f.Edges = edge
 }
 
 // This operation returns the set of next states from set `s` through `ch`, which call delta
-func (g *DFA_Graph) Delta(s map[int]bool, ch byte) (ret map[int]bool) {
+func (g *DFA_Graph) delta(s map[int]bool, ch byte) (ret map[int]bool) {
 	edges := g.innerNFA.Edges[ch]
 	for _, edge := range edges {
 		if s[edge.From.Id] {
@@ -47,7 +47,7 @@ func (g *DFA_Graph) Delta(s map[int]bool, ch byte) (ret map[int]bool) {
 	return
 }
 
-func (g *DFA_Graph) Epsilon_Closure(x map[int]bool) (epsilonClosure map[int]bool) {
+func (g *DFA_Graph) epsilonClosure(x map[int]bool) (epsilonClosure map[int]bool) {
 	Q := make([]int, 0)
 	for k := range x {
 		Q = append(Q, k)
@@ -69,7 +69,7 @@ func (g *DFA_Graph) Epsilon_Closure(x map[int]bool) (epsilonClosure map[int]bool
 	return
 }
 
-func (g *DFA_Graph) ConstructAlphabeta() {
+func (g *DFA_Graph) constructAlphabeta() {
 	edges := g.innerNFA.Edges
 	for ch, v := range edges {
 		if v != nil {
@@ -78,23 +78,23 @@ func (g *DFA_Graph) ConstructAlphabeta() {
 	}
 }
 
-func (g *DFA_Graph) SubsetContruct() {
+func (g *DFA_Graph) subsetContruct() {
 	initSet := map[int]bool{
 		g.innerNFA.StartId: true,
 	}
-	q0 := g.Epsilon_Closure(initSet)
+	q0 := g.epsilonClosure(initSet)
 	workQueue := make([]map[int]bool, 0)
 	workQueue = append(workQueue, q0)
 	for len(workQueue) > 0 {
 		q := workQueue[0]
 		workQueue = workQueue[1:]
 		for c := range g.Alphabeta {
-			v := g.Delta(q, c)
+			v := g.delta(q, c)
 			if v == nil {
 				continue
 			}
-			t := g.Epsilon_Closure(v)
-			g.AddEdge(q, t, c)
+			t := g.epsilonClosure(v)
+			g.addEdge(q, t, c)
 			if g.NeedNewNode {
 				workQueue = append(workQueue, t)
 				g.NeedNewNode = false
@@ -103,7 +103,7 @@ func (g *DFA_Graph) SubsetContruct() {
 	}
 }
 
-func (g *DFA_Graph) StoreGraph() {
+func (g *DFA_Graph) storeGraph() {
 	g.Nodes = make([]*DFA_Node, g.NodeCount)
 	for p := g.Head; p != nil; p = p.Next {
 		g.Nodes[p.Id] = p

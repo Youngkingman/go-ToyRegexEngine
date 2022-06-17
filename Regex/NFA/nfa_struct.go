@@ -3,10 +3,12 @@ package nfa
 import lexer "goexpr/Regex/Lexer"
 
 type NFA interface {
-	ThompsonAlgor(tree *lexer.AST)
-	AddEdge(from, to int, edgeChar byte)
-	FindOrInsertNode(num int) *NFA_Node
-	StoreGraph()
+	thompsonAlgor(tree *lexer.AST)
+	addEdge(from, to int, edgeChar byte)
+	findOrInsertNode(num int) *NFA_Node
+	storeGraph()
+	ToNFA()
+	ResetNodesVisited()
 }
 
 const EPSILON_EDGE = byte('-')
@@ -46,7 +48,7 @@ func NewNFA_Graph(str string) *NFA_Graph {
 		Nodes:    nil, //make after the construction of nfa graph
 		Edges:    make(map[byte][]*NFA_Edge),
 	}
-	ret.toNFA()
+	ret.ToNFA()
 	return ret
 }
 
