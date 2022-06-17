@@ -1,8 +1,9 @@
 package dfa
 
 func compareSet(a map[int]bool, b map[int]bool) bool {
-	for k, v := range a {
-		if v != b[k] {
+	for k := range a {
+		_, has := b[k]
+		if !has {
 			return false
 		}
 	}
