@@ -1,18 +1,49 @@
 package mdfa
 
 // 核心实现，如何进行两个集合的划分
-func (g *MDFA_Graph) split(Set map[int]bool) (ret SetPair) {
-	// tmp := copySet(Set)
-	// s1 := make(map[int]bool)
-	// s2 := make(map[int]bool)
-	// for ch, _ := range g.AlphaBeta {
-	// 	edges := g.innerDFA.Edges[ch]
-	// 	for _, edge := range edges {
-
-	// 	}
-	// }
-	//TODO
-	return
+func (g *MDFA_Graph) split(Set map[int]bool) SetPair {
+	tmp := copySet(Set)
+	s1 := make(map[int]bool)
+	s2 := make(map[int]bool)
+	for ch, _ := range g.AlphaBeta {
+		edges := g.innerDFA.Edges[ch]
+		for _, edge := range edges {
+			b1 := false
+			firstSet := g.GammaOld[0]
+			for _, v := range g.GammaOld {
+				from := edge.From.Id
+				to := edge.To.Id
+				if v[to] && !compareSet(tmp, v) {
+					if b1 == false {
+						firstSet = v
+						s1[from] = true
+						delete(Set, from)
+						b1 = true
+					} else {
+						if compareSet(firstSet, v) {
+							s1[from] = true
+							delete(Set, from)
+						} else {
+							s2[from] = true
+							delete(Set, from)
+						}
+					}
+				} else if v[to] && compareSet(tmp, v) {
+					s2[from] = true
+					delete(Set, from)
+				}
+			}
+		}
+		if compareSet(tmp, Set) {
+			if len(s1) > 0 {
+				s2 = copySet(Set)
+				return SetPair{s1, s2}
+			} else {
+				return SetPair{s2, Set}
+			}
+		}
+	}
+	return SetPair{Set1: Set, Set2: Set}
 }
 
 func (g *MDFA_Graph) hopcroft() {
