@@ -5,7 +5,7 @@ func (g *MDFA_Graph) split(Set map[int]bool) SetPair {
 	tmp := copySet(Set)
 	s1 := make(map[int]bool)
 	s2 := make(map[int]bool)
-	for ch, _ := range g.AlphaBeta {
+	for ch := range g.AlphaBeta {
 		edges := g.innerDFA.Edges[ch]
 		for _, edge := range edges {
 			b1 := false
