@@ -51,18 +51,19 @@ func (g *DFA_Graph) epsilonClosure(x map[int]bool) (epsilonClosure map[int]bool)
 	Q := make([]int, 0)
 	for k := range x {
 		Q = append(Q, k)
-		for len(Q) > 0 {
-			q := Q[0]
-			Q = Q[1:]
-			epsilonClosure[q] = true
-			p := g.innerNFA.Nodes[q].Edges
-			for p != nil && p.Char == nfa.EPSILON_EDGE {
-				if !p.To.IsVisited {
-					Q = append(Q, p.To.Id)
-					p.To.IsVisited = true
-				}
-				p = p.Next
+
+	}
+	for len(Q) > 0 {
+		q := Q[0]
+		Q = Q[1:]
+		epsilonClosure[q] = true
+		p := g.innerNFA.Nodes[q].Edges
+		for p != nil && p.Char == nfa.EPSILON_EDGE {
+			if !p.To.IsVisited {
+				Q = append(Q, p.To.Id)
+				p.To.IsVisited = true
 			}
+			p = p.Next
 		}
 	}
 	g.innerNFA.ResetNodesVisited()
