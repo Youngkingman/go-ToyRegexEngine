@@ -29,3 +29,10 @@ func compareSet(a map[int]bool, b map[int]bool) bool {
 	}
 	return true
 }
+
+func copySet(s map[int]bool) (ret map[int]bool) {
+	for k, v := range s {
+		ret[k] = v
+	}
+	return
+}

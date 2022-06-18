@@ -129,8 +129,7 @@ func (g *NFA_Graph) findOrInsertNode(num int) *NFA_Node {
 
 func (g *NFA_Graph) storeGraph() {
 	g.Nodes = make([]*NFA_Node, g.NodeCount)
-	p := g.Head
-	for p != nil {
+	for p := g.Head; p != nil; p = p.Next {
 		g.Nodes[p.Id] = p
 		q := p.Edges
 		for q != nil && q.Char != EPSILON_EDGE {

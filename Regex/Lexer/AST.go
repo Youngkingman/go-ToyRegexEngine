@@ -34,6 +34,7 @@ type parser interface {
 	parse_term() *Token
 	parse_factor() *Token
 	parse_subfactor() *Token
+	toAST()
 }
 
 /*implement of parser*/

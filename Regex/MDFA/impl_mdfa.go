@@ -1,7 +1,17 @@
 package mdfa
 
 // 核心实现，如何进行两个集合的划分
-func (g *MDFA_Graph) split(map[int]bool) (ret SetPair)
+func (g *MDFA_Graph) split(Set map[int]bool) (ret SetPair) {
+	tmp := copySet(Set)
+	s1 := make(map[int]bool)
+	s2 := make(map[int]bool)
+	for ch, _ := range g.AlphaBeta {
+		edges := g.innerDFA.Edges[ch]
+		for _, edge := range edges {
+
+		}
+	}
+}
 
 func (g *MDFA_Graph) hopcroft() {
 	acceptSet := make(map[int]bool)
