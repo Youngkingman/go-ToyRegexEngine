@@ -1,5 +1,7 @@
 package mdfa
 
+var _ MDFA = (*MDFA_Graph)(nil)
+
 // 核心实现，如何进行两个集合的划分
 func (g *MDFA_Graph) split(Set map[int]bool) SetPair {
 	tmp := copySet(Set)
